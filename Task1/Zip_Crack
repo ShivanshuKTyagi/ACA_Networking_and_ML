@@ -1,0 +1,30 @@
+# !/bin/bash
+#Created by Shivanshu Tyagi
+
+
+
+FILE="milestone2.zip"
+
+echo -e "<-----CRACKING FOLLOWING FILE----->\n$(unzip -l $FILE)"
+for i in {A..Z}; 
+do 
+    for j in {a..z}
+    do
+        for k in {'@','#'}
+        do
+            for l in {0..9}
+            do
+                PASSWORD="$i$j$k$l"
+                echo -ne " \rtrying $PASSWORD"
+                unzip -o -P $PASSWORD $FILE &>/dev/null 
+                STATUS=$?
+                if [ $STATUS -eq 0 ]; then
+                echo -e "\nArchive Password is: \"$PASSWORD\""
+                exit
+                fi
+            done
+        done
+    done
+done
+
+

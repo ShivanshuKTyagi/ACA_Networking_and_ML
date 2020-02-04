@@ -1,0 +1,28 @@
+#!/bin/bash
+#Created by Shivanshu Tyagi
+
+location="livescores.xml"
+temp=""
+
+wget -q static.espncricinfo.com/rss/livescores.xml
+echo The Matches going on right now are:
+Matches=" $(grep '<title>' $location | sed 's|*| |g' | sed 's|<title>Cricinfo Live Scores</title>| |g' | sed 's|<title>|> |g' | sed 's|&amp;|and|g' | sed 's| v | v/s |g' | sed 's| </title>|.|g')"
+rm livescores.xml
+echo -e " $Matches"
+read -p "Type the Full name of the team you want to get the notifications for and press enter: " INPUT
+Team=${INPUT:-"India"}
+
+echo $Team
+for ((;;))
+do
+wget -q static.espncricinfo.com/rss/livescores.xml
+score=" $(grep "$Team" $location| sed 's|*| |g' | sed 's|<title>||g' | sed 's|<description>||g' | sed 's|</description>|.|g' | sed 's|&amp;|and|g' | sed 's| v | v/s |g' | sed 's| </title>|.|g')"
+rm livescores.xml
+IFS='.' read -r -a array <<< "$score"
+score=${array[0]}
+temp=${temp:-"No Match Going on"}
+#echo $temp
+notify-send --expire-time=100 "Score for $Team" "$temp"
+echo notification sent
+sleep 10
+done
